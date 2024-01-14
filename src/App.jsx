@@ -103,13 +103,13 @@ function App() {
   const [rowJson, setRowJson] = useState(null);
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, { age: 42 });
-  const { data, error, status } = useQuery({
-    queryKey: ['todos', 1],
-    queryFn: async () => {
-      const respData = await fetch('http://localhost:8081/api/search').then(res=>res.json());
-      return respData;
-    }
-  })
+  // const { data, error, status } = useQuery({
+  //   queryKey: ['todos', 1],
+  //   queryFn: async () => {
+  //     const respData = await fetch('/api/search').then(res=>res.json());
+  //     return respData;
+  //   }
+  // })
 
   useEffect(function SetFormData () {
     var serializedData = localStorage.getItem('searchParams');
@@ -132,7 +132,7 @@ function App() {
     const params = new URLSearchParams(formData);
   // fetch("/path/to/server", {method:"POST", body:params})
   // const respData = await new Response(params).text();
-    const url = new URL('http://localhost:8081/api/search');
+    const url = new URL(location.href + 'api/search');
     url.search = params;
     localStorage.setItem('searchParams', params);
     const respData = await fetch(url, {data: formData}).then(res=>res.json());
