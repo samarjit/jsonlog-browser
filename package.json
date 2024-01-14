@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "fe": "vite",
     "dev:be": "vite -c vite.server-config.js",
     "rollup": "rollup -c rollup.config.js",
     "build:ui": "vite build",
@@ -14,31 +14,42 @@
     "be": "nodemon --exec  node  express-server.js"
   },
   "dependencies": {
-    "@preact/signals-react": "^1.3.6",
-    
+    "@preact/signals-react": "^1.3.7",
+    "@tanstack/react-query": "^5.12.2",
+    "@uiw/react-json-view": "^2.0.0-alpha.10",
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    
+    "react-json-view": "^1.21.3",
+    "react-router-dom": "^6.20.1",
     "tailwindcss": "^3.3.5"
   },
   "devDependencies": {
-    "rollup-plugin-node-polyfills": "^0.2.1",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react-swc": "^3.3.2",
+    "@types/react": "^18.2.17",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.45.0",
-    "eslint-plugin-react": "^7.32.2",
+    "eslint": "^8.54.0",
+    "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
+    "eslint-plugin-react-refresh": "^0.4.4",
     "nodemon": "^3.0.1",
     "pm2": "^5.3.0",
     "postcss": "^8.4.31",
-    "vite": "^4.4.5",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "vite": "^5.0.2",
     "vite-plugin-node": "^3.1.0"
+  },
+  "overrides": {
+    "react-json-view": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "vite-plugin-node": {
+      "vite": "$vite"
+    }
   }
 }
