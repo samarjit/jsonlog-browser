@@ -1,13 +1,13 @@
 export const formDataModel = {
   '@timestamp': 'string',
-  msgType: {
+   type: {
     type: 'enum',
-    values: ['REST-IB-REQ', 'REST-OB-REQ', 'REST-OB-RES', 'REST-OB-ERROR', 'REST-IB-RES', 'REST-IB-ERROR', 'SERVICE-MSG', 'SERVICE-MSG-ERROR']
+    values: ['IB-REQ', 'OB-REQ', 'OB-RES', 'IB-RES']
   },
-  'sMsg.msg': 'string',
-  'sMsg.uriTemplate': 'string',
-  'context[\'idp-trace-id\']': 'string',
-  'sMsg.reqPayload': 'string',
-  'sMsg.resPayload': 'string',
+  'msg': 'string',
+  'url': 'string',
+  'convId': 'string',
+  'data.req': 'string',
+  'data.res': 'string',
   plaintext: 'string'
 };

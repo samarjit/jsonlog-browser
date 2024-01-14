@@ -17,7 +17,7 @@ export default function DynamicFormFields (){
     return Object.entries(formDataModel).map(([fieldName, fieldType]) => {
       if ((typeof(fieldType) === 'string' && fieldType === 'string') || fieldType.type === 'string') {
         return (
-          <div key={fieldName}>
+          <div key={fieldName} className='m-2'>
             <div>{fieldName}:</div>
             <div>
               <input name={fieldName} className=' ' onChange={handleInputChange} />
@@ -26,11 +26,11 @@ export default function DynamicFormFields (){
         );
       } else if (fieldType.type === 'enum') {
         return (
-          <div key={fieldName}>
+          <div key={fieldName} className='m-2'>
             <div>{fieldName}:</div>
-            <div>
+            <div className='flex flex-wrap'>
               {fieldType.values.map((value) => (
-                <label key={value}>
+                <label key={value} className='m-1'>
                   <input type="checkbox" name={fieldName} value={value} onChange={handleInputChange} /> {value}
                 </label>
               ))}
@@ -43,7 +43,7 @@ export default function DynamicFormFields (){
   };
 
   return (
-    <div>
+    <div className='flex flex-wrap'>
       {renderFormFields()}
       {/* Rest of the code */}
     </div>

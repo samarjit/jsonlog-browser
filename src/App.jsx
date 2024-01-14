@@ -146,9 +146,10 @@ function DisplayData({searchResult, handleCellClick, showJsonInSplitPage, ...pro
           val && (
             <tr key={idx}>
               {/* on click of a table cell show cell content in a popup */}
-              <td onClick={() => showJsonInSplitPage(val)}>Expand</td>
+              <td onClick={() => showJsonInSplitPage(val)} title="expand">➚</td>
               {Object.entries(formDataModel).map((ar) => {
                 const field = {name: ar[0], label: ar[0]};
+                const fldVal = evaluateJsonPath(field.name, val);
                 if (field.name === 'plaintext') return ''
                 return <td key={field.name} onClick={(e) => handleCellClick(e)}>
                   {/* {field.name === 'msg' || field.name === 'uriTemplate' ? (
@@ -159,7 +160,11 @@ function DisplayData({searchResult, handleCellClick, showJsonInSplitPage, ...pro
                    
 
                   <div className='truncate hover:overflow-auto w-40 h-14'>
-                    {JSON.stringify(evaluateJsonPath(field.name, val))}
+                    { (typeof(fldVal) === 'object') ?
+                        JSON.stringify(fldVal)
+                      :
+                        fldVal
+                    }
                   </div>
                    
                 </td>
@@ -210,6 +215,7 @@ function App() {
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, { age: 42 });
   const [errorMsg, setErrorMsg] = useState('');
+  const {formDataModel} = useContext(FormDatamodelContext);
   // const { data, error, status } = useQuery({
   //   queryKey: ['query', searchCriteria],
   //   queryFn: async ({ queryKey }) => {
@@ -254,7 +260,7 @@ function App() {
           inputElement.value = value;
       } 
     });
-  }, []);
+  }, [formDataModel]);
 
   function displayResultsInTable(respData) {
     if (respData && respData.result) {
@@ -288,14 +294,17 @@ function App() {
     const params = new URLSearchParams(formData);
   // fetch("/path/to/server", {method:"POST", body:params})
   // const respData = await new Response(params).text();
-    const url = new URL(location.href + 'api/search');
+    const url = new URL(location.origin + '/api/search');
     url.search = params;
     localStorage.setItem('searchParams', params);
     setSearchCriteria(formData);
     setLoading(true);
-    const respData = await fetch(url, {data: formData}).then(res=>res.json());
+    const respData = await fetch(url, {data: formData}).then(res=>res.json())
+    .catch((e) => { setErrorMsg(e.message); setLoading(false); return {} });
     setLoading(false);
-    setErrorMsg(respData.errorMsg);
+    if (respData.errorMsg || respData.success === true) {
+      setErrorMsg(respData.errorMsg);
+    }
     // const respData = await fetch('/api/search', {
     //         method: 'post',
     //         body: JSON.stringify(Object.fromEntries(formData.entries())),
@@ -331,30 +340,30 @@ function App() {
     <>
       <nav className="fixed bg-gray-700 top-0 w-full h-14 flex">
         <div className="p-2"><img src={reactLogo} className="logo react w-full h-full  p-0 " alt="React logo" /></div>
-        <div className='p-2' ><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="cursor-pointer h-full text-gray-200">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
+        <div className='p-2' > 
         </div>
-        <div className="content text-gray-300 text-lg font-bold flex-grow flex items-center ">My ELK</div>
-        <div className="p-2"><img src={reactLogo} className="logo react w-full h-full p-0" alt="React logo" /></div>
+        <div className="content text-slate-100 text-lg font-bold flex-grow flex items-center hover:text-white">JSON log browser</div>
+        <div className="p-2"></div>
       </nav>
        
       <div className="m-2 mt-16">
         <DeriveFormDataModel />
         <form ref={ref}>
-          <fieldset className='grid grid-cols-2'>
+          <fieldset className='bg-slate-100'>
+            <h2>Search</h2>
             <DynamicFormFields />
-            <div></div>
-            <button type="button" onClick={() => search()}>{loading &&
-            <>
-            <div className="loader"></div>
+            <div>
+              <button className="border-gray-300" type="button" onClick={() => search()}>{loading &&
+              <>
+              <div className="loader"></div>
 
-            </>}
-            Search</button>
-            {errorMsg && <div className='text-red-500'>{errorMsg}</div>}
+              </>}
+              Search</button>
+             {errorMsg && <div className='text-red-500'>{errorMsg}</div>}
+            </div>
           </fieldset>
         </form>
-      
+        <br/>
         {/* <table className='td-border w-full'>
           <thead>
           <tr>
@@ -390,7 +399,7 @@ function App() {
         <DisplayData searchResult={searchResult} handleCellClick={handleCellClick} showJsonInSplitPage={showJsonInSplitPage} />
         {modalContent && <Modal content={modalContent} onClose={handleClose} position={position}/>}
         {rowJson && <SpitPanel rowJson={rowJson} onClose={handleSplitPanelClose}/>}
-        
+{/*         
         <h1 className='text-3xl font-bold underline'>Signal test</h1>
         <button type="button" onClick={()=>{ctr.value++}}>Search</button> {ctr.value}
         <p className="read-the-docs">
@@ -398,7 +407,7 @@ function App() {
         </p>
 
         <button type="button" onClick={() => dispatch({type: 'increment'})}>Increment Age</button>
-        {state.age}
+        {state.age} */}
       </div>
     </>
     </QueryClientProvider>
