@@ -77,3 +77,7 @@ button:focus-visible {
   text-align: left;
   
 }
+
+textarea {
+  resize: both;
+}

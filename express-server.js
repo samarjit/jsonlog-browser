@@ -45,7 +45,7 @@ function findObj(queryParams, key, obj, found) {
   const keys = key.split('.');
   let currentObj = obj;
   for (const k of keys) {
-    currentObj = currentObj[k];
+    currentObj = currentObj && currentObj[k];
   }
   if (currentObj && !Array.isArray(queryParams[key]) && typeof queryParams[key] === 'object') {
     Object.keys(queryParams[key]).forEach(qp => {
@@ -54,6 +54,9 @@ function findObj(queryParams, key, obj, found) {
     found.push(key);
   }
   if (currentObj && (typeof currentObj === 'string') && currentObj.includes(queryParams[key])) {
+    found.push(key);
+  }
+  if (currentObj && (typeof currentObj === 'number' && currentObj === parseFloat(queryParams[key]))) {
     found.push(key);
   }
   if (queryParams[key] && Array.isArray(queryParams[key])) {
@@ -84,7 +87,7 @@ async function searchHandler(req, res, next) {
     let parsedLine ; 
     try {
        parsedLine = JSON.parse(line);
-    } catch (e) { console.log('invalid json'); continue;}
+    } catch (e) {continue;}
     let found = [];
     if (queryParams) {
       for (const key in queryParams) {
@@ -110,11 +113,13 @@ async function searchHandler(req, res, next) {
   }
   if (topLines.length === 0) {
     console.log('nothing matched filteratin criteria')
-    topLines = backupLines;
+   // topLines = backupLines;
+    res.json({success: false, result: [], errorMsg: 'No matching lines found'});
+    return;
   } else {
     console.log('returning filtered lines');
   }
-  res.json({success: true, result: topLines});
+  res.json({success: true, result: topLines, errorMsg: ''});
 }
 
 console.log('sendig response')
