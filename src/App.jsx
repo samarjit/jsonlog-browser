@@ -189,7 +189,7 @@ function App() {
         }
       }).filter(x => x);
 
-      setSearchResult (formattedResult);
+      setSearchResult (respData.result); // formattedResult
     }
   }
 
@@ -253,7 +253,7 @@ function App() {
         {position && JSON.stringify(position)}
         <form ref={ref}>
           <fieldset className='grid grid-cols-2'>
-            <div>datetime:</div><div> <input name="datetime" className=' '/></div>
+            <div>datetime:</div><div> <input name="@timestamp" className=' '/></div>
             <div>msgType:</div>
             <div>
               <label> <input type="checkbox" name="msgType[0]" id="" value="REST-IB-REQ" /> REST-IB-REQ</label><br/>
@@ -265,11 +265,11 @@ function App() {
               <label> <input type="checkbox" name="msgType[6]" id="" value="SERVICE-MSG" /> SERVICE-MSG</label><br/>
               <label> <input type="checkbox" name="msgType[7]" id="" value="SERVICE-MSG-ERROR" /> SERVICE-MSG-ERROR</label>
             </div>
-            <div>msg:</div><div> <input name="msg" className=' '/></div>
-            <div>uriTemplate:</div><div> <input name="uriTemplate" className=' '/></div>
-            <div>traceId:</div><div> <input name="traceId" className=' '/></div>
-            <div>reqPayload:</div><div> <input name="reqPayload" className=' '/></div>
-            <div>resPayload:</div><div> <input name="resPayload" className=' '/></div>
+            <div>msg:</div><div> <input name="sMsg.msg" className=' '/></div>
+            <div>uriTemplate:</div><div> <input name="sMsg.uriTemplate" className=' '/></div>
+            <div>traceId:</div><div> <input name="context['idp-trace-id']" className=' '/></div>
+            <div>reqPayload:</div><div> <input name="sMsg.reqPayload" className=' '/></div>
+            <div>resPayload:</div><div> <input name="sMsg.resPayload" className=' '/></div>
             <div>Plain Text:</div><div> <input name="plaintext" className=' '/></div>
             <div></div>
             <button type="button" onClick={() => search()}>Search</button>
@@ -295,15 +295,15 @@ function App() {
           {searchResult.map((val, idx) =>
           (val && <tr key={idx}>{/* on click of a table cell show cell content in a popup*/}
               <td onClick={() => showJsonInSplitPage(val)}>Expand</td>
-            <td>{val.datetime}</td>
+            <td>{val['@timestamp']}</td>
             <td>{val.level}</td>
             <td onClick={(e) => handleCellClick(e)}>{val.msgType}</td>
-            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{val.msg}</div></td>
-            <td><div className='truncate hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{val.uriTemplate}</div></td>
-            <td className='relative'><div className='truncate  hover:overflow-auto w-40 h-14 text-left align-top'  onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.reqHeaders)}</div></td>
-            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.reqPayload)}</div></td>
-            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.resPayload)}</div></td>
-            <td>{val.traceId}</td>
+            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{val.sMsg.msg}</div></td>
+            <td><div className='truncate hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{val.sMsg.uriTemplate}</div></td>
+            <td className='relative'><div className='truncate  hover:overflow-auto w-40 h-14 text-left align-top'  onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.sMsg.reqHeaders)}</div></td>
+            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.sMsg.reqPayload)}</div></td>
+            <td><div className='truncate overflow-hidden hover:overflow-auto w-40 h-14' onClick={(e) => handleCellClick(e)}>{JSON.stringify(val.sMsg.resPayload)}</div></td>
+            <td>{val.sMsg['idp-trace-id']}</td>
             </tr>)
           )}
           </tbody>
