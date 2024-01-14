@@ -96,22 +96,52 @@ function reducer(state, action) {
 
 const queryClient = new QueryClient()
 
+
+/**
+ *  // Sample Log Line
+ * @example
+ *  const {'@timestamp': datetime, 'level': level, 'msgType': msgType,
+ *   sMsg: { msg, reqHeaders, reqPayload, resPayload, uriTemplate}, 
+ *   context: {'idp-trace-id': traceId}} = {
+ *   "@timestamp": "2023-11-05 18:14:53.745 GMT",
+ *   level: "INFO",
+ *   thread: "RxCachedThreadScheduler-2",
+ *   logger: "c.a.i.c.p.PricingCartProcessor",
+ *   msgType: "SERVICE-MSG",
+ *   sMsg: {
+ *   msg: "START getActivePricingByKey ...wireless-sdg"
+ *   },
+ *   context: {
+ *   "idp-trace-id": "b730e2f928efb5ed:e15ce5ed4c756286:b730e2f928efb5ed:1"
+ *   },
+ *   seq: 638,
+ *   format: "nf-v1.0"
+ * };
+ * 
+ * @returns 
+ */
 function App() {
   const [searchResult, setSearchResult] = useState([]);
+  const [searchCriteria, setSearchCriteria] = useState([]);
   const [modalContent, setModalContent] = useState(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [rowJson, setRowJson] = useState(null);
   const ref = useRef();
   const [state, dispatch] = useReducer(reducer, { age: 42 });
+  
   // const { data, error, status } = useQuery({
-  //   queryKey: ['todos', 1],
-  //   queryFn: async () => {
-  //     const respData = await fetch('/api/search').then(res=>res.json());
+  //   queryKey: ['query', searchCriteria],
+  //   queryFn: async ({ queryKey }) => {
+  //     console.log('Querying in useQuery', queryKey[1])
+  //     const respData = await fetch('/api/search', {data: queryKey[1]}).then(res=>res.json());
   //     return respData;
   //   }
   // })
-
-  useEffect(function SetFormData () {
+  // useEffect((data) => {
+  //   displayResultsInTable(data);
+  // }, [data]);
+  
+  useEffect(function initFormDataFromLocalStorage () {
     var serializedData = localStorage.getItem('searchParams');
     new URLSearchParams(serializedData).forEach((value, key) => {
       const inputElement = ref.current.elements.namedItem(key);
@@ -124,43 +154,13 @@ function App() {
     });
   }, []);
 
-  async function search() {
-    const formData = new FormData(ref.current);
-    for(let i of formData.entries()) {
-      console.log(i)
-    }
-    const params = new URLSearchParams(formData);
-  // fetch("/path/to/server", {method:"POST", body:params})
-  // const respData = await new Response(params).text();
-    const url = new URL(location.href + 'api/search');
-    url.search = params;
-    localStorage.setItem('searchParams', params);
-    const respData = await fetch(url, {data: formData}).then(res=>res.json());
-    console.log('search called', respData);
-    // const {'@timestamp': datetime, 'level': level, 'msgType': msgType,
-    //   sMsg: { msg, reqHeaders, reqPayload, resPayload, uriTemplate}, 
-    //   context: {'idp-trace-id': traceId}} = {
-    //   "@timestamp": "2023-11-05 18:14:53.745 GMT",
-    //   level: "INFO",
-    //   thread: "RxCachedThreadScheduler-2",
-    //   logger: "c.a.i.c.p.PricingCartProcessor",
-    //   msgType: "SERVICE-MSG",
-    //   sMsg: {
-    //   msg: "START getActivePricingByKey ...wireless-sdg"
-    //   },
-    //   context: {
-    //   "idp-trace-id": "b730e2f928efb5ed:e15ce5ed4c756286:b730e2f928efb5ed:1"
-    //   },
-    //   seq: 638,
-    //   format: "nf-v1.0"
-    // };
-    // console.log(datetime)
-    if (respData.result) {
+  function displayResultsInTable(respData) {
+    if (respData && respData.result) {
       const formattedResult = respData.result.map( res => {
         // if (res && !res.context['idp-trace-id']) return;
-        const {'@timestamp': datetime, 'level': level, 'msgType': msgType,
-      sMsg: { msg, reqHeaders, reqPayload, resPayload, uriTemplate} = {}, 
-      context: {'idp-trace-id': traceId} = {} } = res;
+      const {'@timestamp': datetime, 'level': level, 'msgType': msgType,
+        sMsg: { msg, reqHeaders, reqPayload, resPayload, uriTemplate} = {}, 
+        context: {'idp-trace-id': traceId} = {} } = res;
         return {
           datetime,
           level,
@@ -177,6 +177,24 @@ function App() {
       setSearchResult (formattedResult);
     }
   }
+
+  async function search() {
+    const formData = new FormData(ref.current);
+    // for(let i of formData.entries()) {
+    //   console.log(i)
+    // }
+    const params = new URLSearchParams(formData);
+  // fetch("/path/to/server", {method:"POST", body:params})
+  // const respData = await new Response(params).text();
+    const url = new URL(location.href + 'api/search');
+    url.search = params;
+    localStorage.setItem('searchParams', params);
+    // setSearchCriteria(formData);
+    const respData = await fetch(url, {data: formData}).then(res=>res.json());
+    console.log('search called', respData);
+    displayResultsInTable(respData)
+  }
+
   const handleCellClick = (ev) => {
     console.log('rendering modal')
     // const rect = ev.target.getBoundingClientRect();
