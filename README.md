@@ -8,7 +8,7 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 
-wt -d "c:\myprojects\my-elk" -p "fe" cmd /k npm run dev ; split-pane -d "c:\myprojects\my-elk" cmd /k npm run be
+wt -d "c:\myprojects\my-elk" -p "fe" cmd /k npm run fe ; split-pane -d "c:\myprojects\my-elk" cmd /k npm run be
 
  npx npm-check-updates -u
 

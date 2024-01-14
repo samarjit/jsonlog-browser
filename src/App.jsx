@@ -132,15 +132,30 @@ function App() {
   // const { data, error, status } = useQuery({
   //   queryKey: ['query', searchCriteria],
   //   queryFn: async ({ queryKey }) => {
-  //     console.log('Querying in useQuery', queryKey[1])
-  //     const respData = await fetch('/api/search', {data: queryKey[1]}).then(res=>res.json());
+  //     console.log('Querying in useQuery', JSON.stringify(Object.fromEntries(queryKey[1].entries())))
+  //     const respData = await fetch('/api/search', {
+  //       method: 'get',
+  //       // body:  queryKey[1],
+  //       body: JSON.stringify(Object.fromEntries(queryKey[1].entries())),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Accept': '*/*' 
+  //       }
+  //     }).then(res=>res.json());
+  //     console.log('result received', respData)
   //     return respData;
   //   }
   // })
-  // useEffect((data) => {
+  // useEffect(() => {
   //   displayResultsInTable(data);
   // }, [data]);
-  
+  useEffect(() => {
+    console.log('search criteria changed');
+    for(let i of searchCriteria.entries()) {
+      console.log(i)
+    }
+  }, [searchCriteria]);
+
   useEffect(function initFormDataFromLocalStorage () {
     var serializedData = localStorage.getItem('searchParams');
     new URLSearchParams(serializedData).forEach((value, key) => {
@@ -189,8 +204,16 @@ function App() {
     const url = new URL(location.href + 'api/search');
     url.search = params;
     localStorage.setItem('searchParams', params);
-    // setSearchCriteria(formData);
+    setSearchCriteria(formData);
     const respData = await fetch(url, {data: formData}).then(res=>res.json());
+    // const respData = await fetch('/api/search', {
+    //         method: 'post',
+    //         body: JSON.stringify(Object.fromEntries(formData.entries())),
+    //         headers: {
+    //           'Content-Type': 'application/json',                 
+    //           'Accept': '*/*' 
+    //         },
+    //       }).then(res=>res.json());
     console.log('search called', respData);
     displayResultsInTable(respData)
   }

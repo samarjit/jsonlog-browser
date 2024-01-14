@@ -2,9 +2,11 @@ import express from "express";
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import readline from 'readline';
+import cors from 'cors';
 
 const app = express();
 
+// app.use(cors);
 app.use(bodyParser.json());
 // support parsing of application/json type post data
 app.use(express.static("public"));
@@ -23,10 +25,13 @@ function applyANDcondition(queryParams, foundAr) {
   return allConditionNotMet;
 }
 // Search log files which contains json data
-app.get('/search', async (req, res, next) => {
-  console.log('serving search', req.query)
+app.get('/api/search', searchHandler);
+app.post('/api/search', searchHandler);
+
+async function searchHandler(req, res, next) {
+  console.log('serving search', req.query , 'post data', req.body)
   // get path params from request
-  const queryParams = req.query;
+  const queryParams = req.query || req.body;
 
   let topLines = [];
   const backupLines = [];
@@ -72,7 +77,8 @@ app.get('/search', async (req, res, next) => {
     console.log('returning filtered lines');
   }
   res.json({success: true, result: topLines});
-});
+}
+
 console.log('sendig response')
 // if (import.meta.env.PROD)
 app.listen(3000, () => {

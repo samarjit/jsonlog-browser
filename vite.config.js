@@ -8,7 +8,7 @@ export default defineConfig({
     port: 8082,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000/', secure: false, rewrite: (path) => path.replace(/^\/api/, ''),
+        target: 'http://localhost:3000/' //, secure: false, rewrite: (path) => path.replace(/^\/api/, ''),
       },
     }
   }
